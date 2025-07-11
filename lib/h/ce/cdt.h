@@ -1,4 +1,5 @@
 #pragma once
+
 /*
 MIT License
 
@@ -30,17 +31,16 @@ namespace ce
     inline bool is_edge(uint n) { return n % 4 != 3; }
     inline bool is_face(uint n) { return n % 4 == 3; }
 
-    template<size_t Q = 0, size_t N = 8 * 1024> struct cdt
+    template<size_t Q = 0, size_t N = 16 * 1024> struct cdt
     {
-
-        enum class edge_id_t : uint16_t { nil = 0 };
+        enum class edge_id_t : uint32_t { nil = 0 };
         enum class face_id_t : uint16_t { nil = 0 };
 
         static constexpr int32_t m2w32 = 1 << Q;
 
-        using index_t = uint16_t;
+        using index_t = uint32_t;
 
-        static constexpr index_t c_limit = N < 8 * 1024 ? N : 8 * 1024;
+        static constexpr index_t c_limit = N < 16 * 1024 ? N : 16 * 1024;
 
         // every face is made out of 4 nodes
         // f + 0, f + 1, f + 2 are the 3 edges of the face 
@@ -56,37 +56,37 @@ namespace ce
 
         struct edge_data
         {
-            uint16_t c : 3;
-            uint16_t p : 13;
-            uint16_t e;
+            uint32_t c : 1;
+            uint32_t p : 14;
+            uint32_t e : 17;
         };
 
         // per vert data - for every vert { x, y } there are two faces
         struct vert_data
         {
-            uint16_t a_c0 : 3;
-            uint16_t a_p0 : 13;
-            uint16_t a_e0;
-            uint16_t a_c1 : 3;
-            uint16_t a_p1 : 13;
-            uint16_t a_e1;
-            uint16_t a_c2 : 3;
-            uint16_t a_p2 : 13;
-            uint16_t a_e2;
+            uint32_t a_c0 : 1;
+            uint32_t a_p0 : 14;
+            uint32_t a_e0 : 17;
+            uint32_t a_c1 : 1;
+            uint32_t a_p1 : 14;
+            uint32_t a_e1 : 17;
+            uint32_t a_c2 : 1;
+            uint32_t a_p2 : 14;
+            uint32_t a_e2 : 17;
 
             uint16_t a_fi;
 
             int16_t x;
 
-            uint16_t b_c0 : 3;
-            uint16_t b_p0 : 13;
-            uint16_t b_e0;
-            uint16_t b_c1 : 3;
-            uint16_t b_p1 : 13;
-            uint16_t b_e1;
-            uint16_t b_c2 : 3;
-            uint16_t b_p2 : 13;
-            uint16_t b_e2;
+            uint32_t b_c0 : 1;
+            uint32_t b_p0 : 14;
+            uint32_t b_e0 : 17;
+            uint32_t b_c1 : 1;
+            uint32_t b_p1 : 14;
+            uint32_t b_e1 : 17;
+            uint32_t b_c2 : 1;
+            uint32_t b_p2 : 14;
+            uint32_t b_e2 : 17;
 
             uint16_t b_fi;
 
@@ -96,17 +96,17 @@ namespace ce
         // per face data - 3 edges, user `fi` face info, 1 cordinate from a vert
         struct face_data
         {
-            uint16_t c0 : 3;
-            uint16_t p0 : 13;
-            uint16_t e0;
+            uint32_t c0 : 1;
+            uint32_t p0 : 14;
+            uint32_t e0 : 17;
 
-            uint16_t c1 : 3;
-            uint16_t p1 : 13;
-            uint16_t e1;
+            uint32_t c1 : 1;
+            uint32_t p1 : 14;
+            uint32_t e1 : 17;
 
-            uint16_t c2 : 3;
-            uint16_t p2 : 13;
-            uint16_t e2;
+            uint32_t c2 : 1;
+            uint32_t p2 : 14;
+            uint32_t e2 : 17;
 
             uint16_t fi;
 
@@ -648,17 +648,17 @@ namespace ce
 
                 vs[pn].a_c0 = 0;
                 vs[pn].a_p0 = uf.p0;
-                vs[pn].a_e0 = (uint16_t)u0 + 1;
+                vs[pn].a_e0 = (uint32_t)u0 + 1;
 
                 vs[pn].a_c1 = uf.c1;
                 vs[pn].a_p1 = pn;
                 vs[pn].a_e1 = uf.e1;
                 if (uf.e1 != 0)
-                    es[uf.e1].e = (uint16_t)v0 + 1;
+                    es[uf.e1].e = (uint32_t)v0 + 1;
 
                 vs[pn].a_c2 = 0;
                 vs[pn].a_p2 = uf.p2;
-                vs[pn].a_e2 = (uint16_t)w0 + 1;
+                vs[pn].a_e2 = (uint32_t)w0 + 1;
 
                 vs[pn].a_fi = uf.fi;
 
@@ -666,17 +666,17 @@ namespace ce
 
                 vs[pn].b_c0 = 0;
                 vs[pn].b_p0 = uf.p0;
-                vs[pn].b_e0 = (uint16_t)u0 + 2;
+                vs[pn].b_e0 = (uint32_t)u0 + 2;
 
                 vs[pn].b_c1 = 0;
                 vs[pn].b_p1 = uf.p1;
-                vs[pn].b_e1 = (uint16_t)v0 + 2;
+                vs[pn].b_e1 = (uint32_t)v0 + 2;
 
                 vs[pn].b_c2 = uf.c2;
                 vs[pn].b_p2 = pn;
                 vs[pn].b_e2 = uf.e2;
                 if (uf.e2 != 0)
-                    es[uf.e2].e = (uint16_t)w0 + 2;
+                    es[uf.e2].e = (uint32_t)w0 + 2;
 
                 vs[pn].b_fi = uf.fi;
 
@@ -685,10 +685,10 @@ namespace ce
                 uf.p0 = pn;
 
                 uf.c1 = 0;
-                uf.e1 = (uint16_t)v0 + 0;
+                uf.e1 = (uint32_t)v0 + 0;
 
                 uf.c2 = 0;
-                uf.e2 = (uint16_t)w0 + 0;
+                uf.e2 = (uint32_t)w0 + 0;
 
                 validate_face(u0);
                 validate_face(v0);
@@ -701,8 +701,8 @@ namespace ce
             // on edge
             else
             {
-                auto ue = un;
-                auto ve = es[ue].e;
+                uint32_t ue = un;
+                uint32_t ve = es[ue].e;
                 if (ve == 0)
                     return false;
 
@@ -724,13 +724,13 @@ namespace ce
 
                 vs[pn].a_c0 = es[ue].c;
                 vs[pn].a_p0 = es[ue].p;
-                vs[pn].a_e0 = (uint16_t)yn + 0;
+                vs[pn].a_e0 = (uint32_t)yn + 0;
 
                 vs[pn].a_c1 = es[u1].c;
                 vs[pn].a_p1 = pn;
                 vs[pn].a_e1 = es[u1].e;
                 if (es[u1].e != 0)
-                    es[es[u1].e].e = (uint16_t)xn + 1;
+                    es[es[u1].e].e = (uint32_t)xn + 1;
 
                 vs[pn].a_c2 = 0;
                 vs[pn].a_p2 = es[u2].p;
@@ -740,13 +740,13 @@ namespace ce
 
                 vs[pn].x = int16_t(px);
 
-                es[u1].e = (uint16_t)xn + 2;
+                es[u1].e = (uint32_t)xn + 2;
                 es[u1].c = 0;
                 es[u2].p = pn;
 
                 vs[pn].b_c0 = es[ve].c;
                 vs[pn].b_p0 = es[ve].p;
-                vs[pn].b_e0 = (uint16_t)xn + 0;
+                vs[pn].b_e0 = (uint32_t)xn + 0;
 
                 vs[pn].b_c1 = 0;
                 vs[pn].b_p1 = es[v1].p;
@@ -756,13 +756,13 @@ namespace ce
                 vs[pn].b_p2 = pn;
                 vs[pn].b_e2 = es[v2].e;
                 if (es[v2].e != 0)
-                    es[es[v2].e].e = (uint16_t)yn + 2;
+                    es[es[v2].e].e = (uint32_t)yn + 2;
 
                 vs[pn].b_fi = fs[ve / 4].fi;
 
                 vs[pn].y = int16_t(py);
 
-                es[v2].e = (uint16_t)yn + 1;
+                es[v2].e = (uint32_t)yn + 1;
                 es[v2].c = 0;
                 es[v1].p = pn;
 
