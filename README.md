@@ -9,7 +9,7 @@
 
 ## Features
 ### ce.h
-- 0 depenacies
+- 0 dependencies
 - header only
 #### basic types compatible with `std`
 - `uint`, `size_t`, `ptrdiff_t`
